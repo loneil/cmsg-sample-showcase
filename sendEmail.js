@@ -1,0 +1,89 @@
+const qS = document.querySelector.bind(document);
+
+function sendEmail(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const sc = qS("#scName").value;
+    const pw = qS("#scPassword").value;
+
+    const url = `https://i1api.nrs.gov.bc.ca/oauth2/v1/oauth/token?disableDeveloperFilter=true&grant_type=client_credentials&scope=CMSG.*`;
+
+    const headers = new Headers();
+    headers.set(
+        "Authorization",
+        "Basic " + window.btoa(sc + ':' + pw)
+    );
+
+    fetch(url, {
+        method: "get",
+        headers: headers
+    })
+        .then(resp => resp.json())
+        .then(function (data) {
+            const token = data.access_token;
+            console.log(`token: ${token}`)
+            if (!token || token.length < 16) {
+                showError("An error occured while fetching a token. See console for more details.");
+                return;
+            }
+            postToCmsg(token);
+        })
+        .catch(function (error) {
+            console.log(`ERROR, caught error fetching token from ${url}`);
+            console.log(error);
+        });
+}
+
+function postToCmsg(token) {
+
+    const url = `https://i1api.nrs.gov.bc.ca/cmsg-messaging-api/v1/messages`;
+
+    const defaults = `
+    {
+        "@type" : "http://nrscmsg.nrs.gov.bc.ca/v1/emailMessage",
+        "links": [
+        ],
+        "sender": "${qS("#from").value}",
+        "recipients": [
+          "${qS("#to").value}"
+        ],
+        "subject": "${qS("#subject").value}",
+        "delay": 0,
+        "expiration": 0,
+        "maxResend": 0,
+        "mediaType": "text/plain",
+        "message": "${qS("#body").value}"
+    }
+    `
+
+    console.log(defaults);
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${token}`);
+    headers.set("Content-Type", "application/json");
+
+    fetch(url, {
+        method: "POST",
+        body: defaults,
+        headers: headers
+    })
+        .then(res => res.json())
+        .then(function (response) {
+            console.log(response);
+            $('#successModal').modal('show');
+        })
+        .catch(function (error) {
+            console.error("Error posting email:", error);
+            showError("An error occured while sending the email. See console for more details.");
+        });
+}
+
+
+function showError(text) {
+    $('#errorModal').modal('show'); // need the jQuery object to call the bootstrap modal method
+    $('#errorModal .modal-body p').text(text);
+}
+
+qS("#emailForm").addEventListener("submit", sendEmail);
+qS("#doneButton").addEventListener("click", function () { window.scrollTo(0, 0); location.reload(true); });
