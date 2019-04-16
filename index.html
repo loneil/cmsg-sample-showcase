@@ -48,8 +48,8 @@
                     <h4 class="mb-3">Email</h4>
 
                     <div class="mb-3">
-                        <label for="from">From</label>
-                        <input type="text" class="form-control" id="from" value="NR.CommonServiceShowcase@gov.bc.ca"
+                        <label for="sender">Sender</label>
+                        <input type="text" class="form-control" id="sender" value="NR.CommonServiceShowcase@gov.bc.ca"
                             required="">
                         <div class="invalid-feedback">
                             Email sender is required.
@@ -57,28 +57,27 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="to">To</label>
-                        <input type="text" class="form-control" id="to" value="lucas.oneil@gov.bc.ca"
+                        <label for="recipients">Recipients</label>
+                        <input type="text" class="form-control" id="recipients"
                             placeholder="you@example.com (separate multiple by comma)" required="">
                         <div class="invalid-feedback">
-                            One or more email receivers required.
+                            One or more email recipients required.
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="subject">Subject</label>
-                        <input type="text" class="form-control" id="subject" value="Hello World" required="">
+                        <input type="text" class="form-control" id="subject" required="">
                         <div class="invalid-feedback">
-                            Please enter a subject.
+                            Subject is required.
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="body">Body</label>
-                        <textarea id="body" class="form-control" cols="30" rows="7"
-                            required="">Hello</textarea>
+                        <textarea id="body" class="form-control" cols="30" rows="7" required=""></textarea>
                         <div class="invalid-feedback">
-                            Please enter email contents.
+                            Email body is required.
                         </div>
                     </div>
 

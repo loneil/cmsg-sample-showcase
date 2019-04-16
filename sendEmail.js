@@ -1,6 +1,11 @@
 const qS = document.querySelector.bind(document);
 
 function sendEmail(event) {
+
+    if (this.checkValidity() === false) {
+        return;
+    }
+
     event.preventDefault();
     event.stopPropagation();
 
@@ -39,25 +44,24 @@ function postToCmsg(token) {
 
     const url = `https://i1api.nrs.gov.bc.ca/cmsg-messaging-api/v1/messages`;
 
+    // Things that aren't in the UI to enter
     const defaults = `
     {
         "@type" : "http://nrscmsg.nrs.gov.bc.ca/v1/emailMessage",
         "links": [
         ],
-        "sender": "${qS("#from").value}",
-        "recipients": [
-          "${qS("#to").value}"
-        ],
-        "subject": "${qS("#subject").value}",
         "delay": 0,
         "expiration": 0,
         "maxResend": 0,
-        "mediaType": "text/plain",
-        "message": "${qS("#body").value}"
+        "mediaType": "text/plain"
     }
     `
-
-    console.log(defaults);
+    // Add the user entered fields
+    const requestBody = JSON.parse(defaults);
+    requestBody.sender = qS("#sender").value;
+    requestBody.subject = qS("#subject").value;
+    requestBody.message = qS("#body").value;
+    requestBody.recipients = qS("#recipients").value.replace(/\s/g, '').split(",");
 
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${token}`);
@@ -65,7 +69,7 @@ function postToCmsg(token) {
 
     fetch(url, {
         method: "POST",
-        body: defaults,
+        body: JSON.stringify(requestBody),
         headers: headers
     })
         .then(res => res.json())
